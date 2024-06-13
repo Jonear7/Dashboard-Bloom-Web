@@ -37,7 +37,7 @@ mysqli_close($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-in/Check-out Records - Admin Dashboard</title>
+    <title>Check-out Records </title>
     <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -46,7 +46,7 @@ mysqli_close($conn);
     <!-- Main content -->
     <div class="flex-1 p-8">
         <div class="container mx-auto py-8">
-            <h1 class="text-3xl font-bold mb-8 text-center">Check-in/Check-out Records</h1>
+            <h1 class="text-3xl font-bold mb-8 text-center">Check-out Records</h1>
 
             <!-- Search form -->
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="get" class="mb-4">
