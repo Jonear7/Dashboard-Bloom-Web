@@ -50,6 +50,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         mysqli_stmt_close($stmt);
     }
+
+    // Check if the action is for checking out
+    if (isset($_POST["submit_checkout"])) {
+        $booking_id = sanitize_input($conn, $_POST['booking_id']);
+        $checkout_date = date('Y-m-d'); // Current date as checkout date
+
+        // Get booking details to insert into checkin_out
+        $query_select = "SELECT * FROM booking WHERE booking_id = ?";
+        $stmt_select = mysqli_prepare($conn, $query_select);
+        mysqli_stmt_bind_param($stmt_select, 'i', $booking_id);
+        mysqli_stmt_execute($stmt_select);
+        $result_select = mysqli_stmt_get_result($stmt_select);
+        $booking_details = mysqli_fetch_assoc($result_select);
+        mysqli_stmt_close($stmt_select);
+
+        // Insert into checkin_out table
+        $query_insert = "INSERT INTO checkin_out (booking_id, checkin_date, checkout_date, total_price, room_number, status) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt_insert = mysqli_prepare($conn, $query_insert);
+        mysqli_stmt_bind_param($stmt_insert, 'isdsis', $booking_id, $booking_details['checkin_date'], $checkout_date, $booking_details['total_price'], $booking_details['room_number'], 'Checked-out');
+        if (mysqli_stmt_execute($stmt_insert)) {
+            $success_message = "Booking checked-out successfully.";
+        } else {
+            $error_message = "Error checking out booking: " . mysqli_error($conn);
+        }
+        mysqli_stmt_close($stmt_insert);
+
+        // Delete booking from booking table
+        $query_delete = "DELETE FROM booking WHERE booking_id = ?";
+        $stmt_delete = mysqli_prepare($conn, $query_delete);
+        mysqli_stmt_bind_param($stmt_delete, 'i', $booking_id);
+        if (mysqli_stmt_execute($stmt_delete)) {
+            $success_message .= " Booking record deleted.";
+        } else {
+            $error_message .= " Error deleting booking record: " . mysqli_error($conn);
+        }
+        mysqli_stmt_close($stmt_delete);
+    }
 }
 
 // Build the query based on search
@@ -124,7 +161,7 @@ mysqli_close($conn);
                     </thead>
                     <tbody>
                         <?php foreach ($bookings as $booking): ?>
-                            <tr id="booking_<?php echo $booking['booking_id']; ?>" class="<?php echo ($booking['status'] === 'Checked-in') ? 'hidden' : ''; ?>">
+                            <tr id="booking_<?php echo $booking['booking_id']; ?>">
                                 <td class="border px-4 py-2"><?php echo $booking['booking_id']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['room_number']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['username']; ?></td>
@@ -133,10 +170,10 @@ mysqli_close($conn);
                                 <td class="border px-4 py-2"><?php echo $booking['total_price']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['status']; ?></td>
                                 <td class="border px-4 py-2">
-                                    <?php if ($booking['status'] !== 'Checked-in'): ?>
-                                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="checkin_form_<?php echo $booking['booking_id']; ?>">
+                                    <?php if ($booking['status'] === 'Checked-in'): ?>
+                                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                                             <input type="hidden" name="booking_id" value="<?php echo $booking['booking_id']; ?>">
-                                            <button type="button" onclick="checkInBooking(<?php echo $booking['booking_id']; ?>)" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">Check-in</button>
+                                            <button type="submit" name="submit_checkout" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded">Checkout</button>
                                         </form>
                                     <?php endif; ?>
                                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -153,47 +190,6 @@ mysqli_close($conn);
     </div>
 
     <script>
-        // Function to handle check-in action
-        function checkInBooking(bookingId) {
-            // Perform AJAX request to update booking status
-            let formData = new FormData();
-            formData.append('booking_id', bookingId);
-            formData.append('submit_checkin', '1');
-
-            fetch('<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Update status in the UI
-                    let statusCell = document.querySelector('#booking_' + bookingId + ' .status');
-                    if (statusCell) {
-                        statusCell.textContent = 'Checked-in';
-                    }
-
-                    // Hide the check-in button
-                    let checkinButton = document.querySelector('#booking_' + bookingId + ' button');
-                    if (checkinButton) {
-                        checkinButton.style.display = 'none';
-                    }
-
-                    // Optionally, hide the entire row after check-in
-                    let bookingRow = document.getElementById('booking_' + bookingId);
-                    if (bookingRow) {
-                        bookingRow.classList.add('hidden');
-                    }
-                } else {
-                    alert('Failed to check-in booking. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while processing your request.');
-            });
-        }
-
         // Function to hide messages after 5 seconds
         setTimeout(function() {
             let successMessage = document.getElementById('success-message');

@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
 // Handle delete operation for payment record
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $query = "SELECT payment_image FROM payment_online WHERE payment_online_id=?";
+    $query = "SELECT payment_image FROM payment_online WHERE payment_id=?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -79,7 +79,7 @@ if (isset($_GET['delete'])) {
 }
 
 // Retrieve payments data from the database
-$query = "SELECT payment_online_id, payment_image, payment_date FROM payment_online";
+$query = "SELECT payment_id, payment_image, payment_date FROM payment_online";
 $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
@@ -127,7 +127,7 @@ $conn->close();
                     <tbody>
                         <?php foreach ($payments as $payment): ?>
                             <tr>
-                                <td class="border px-4 py-2"><?php echo $payment['payment_online_id']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $payment['payment_id']; ?></td>
                                 <td class="border px-4 py-2 flex justify-center">
                                     <?php
                                         // Get the path to the image file
@@ -144,7 +144,7 @@ $conn->close();
                                 </td>
                                 <td class="border px-4 py-2"><?php echo $payment['payment_date']; ?></td>
                                 <td class="border px-4 py-2">
-                                    <a href="?delete=<?php echo $payment['payment_online_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
+                                    <a href="?delete=<?php echo $payment['payment_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
