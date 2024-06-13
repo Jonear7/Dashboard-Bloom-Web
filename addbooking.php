@@ -8,14 +8,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"));
 
     // Check if all required fields are present
-    if(isset($data->user_id, $data->room_id, $data->checkin_date, $data->checkout_date, $data->room_amount, $data->total_price, $data->payment_id)) {
+    if(isset($data->user_id, $data->room_id, $data->checkin_date, $data->checkout_date, $data->room_number, $data->total_price, $data->payment_id, $data->status)) {
         $user_id = $data->user_id;
         $room_id = $data->room_id;
         $checkin_date = $data->checkin_date;
         $checkout_date = $data->checkout_date;
-        $room_amount = $data->room_amount;
+        $room_number = $data->room_number; // Changed from room_amount to room_number
         $total_price = $data->total_price;
         $payment_id = $data->payment_id;
+        $status = $data->status; // Assuming status is passed in the JSON data
         
         // Check if the user exists
         $user_check_query = "SELECT * FROM users WHERE user_id = ?";
@@ -31,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_user->close();
         
         // Prepare and execute SQL statement to insert booking data into the database
-        $stmt = $conn->prepare("INSERT INTO booking (user_id, room_id, checkin_date, checkout_date, room_amount, total_price, payment_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisssis", $user_id, $room_id, $checkin_date, $checkout_date, $room_amount, $total_price, $payment_id);
+        $stmt = $conn->prepare("INSERT INTO booking (user_id, room_id, checkin_date, checkout_date, room_number, total_price, payment_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisssiss", $user_id, $room_id, $checkin_date, $checkout_date, $room_number, $total_price, $payment_id, $status);
 
         try {
             if ($stmt->execute()) {

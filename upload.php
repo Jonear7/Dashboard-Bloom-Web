@@ -6,6 +6,7 @@ if(isset($_POST["submit"])){
     $type_name = $_POST['type_name']; // Change 'name' to 'type_name'
     $description = $_POST['description'];
     $price = $_POST['price'];
+    $room_number = $_POST['room_number']; // Retrieve room number input
 
     // Process image files
     $totalFiles = count($_FILES['fileImg']['name']);
@@ -28,21 +29,29 @@ if(isset($_POST["submit"])){
     $filesArray = json_encode($filesArray);
 
     // Insert data into the rmtype table
-    $query1 = "INSERT INTO rmtype (type_name, description, price, image) VALUES ('$type_name', '$description', '$price', '$filesArray')";
-    mysqli_query($conn, $query1);
+    $query1 = "INSERT INTO rmtype (type_name, description, price, image) VALUES (?, ?, ?, ?)";
+    $stmt1 = $conn->prepare($query1);
+    $stmt1->bind_param("ssds", $type_name, $description, $price, $filesArray);
+    $stmt1->execute();
 
     // Retrieve the last inserted rmtype_id
     $rmtype_id = mysqli_insert_id($conn);
 
-    // Insert data into the room table with default status 'available'
-    $query2 = "INSERT INTO room (rmtype_id, status) VALUES ('$rmtype_id', 'available')";
-    mysqli_query($conn, $query2);
+    // Insert data into the room table with room number and default status 'available'
+    $query2 = "INSERT INTO room (rmtype_id, room_number, status) VALUES (?, ?, 'available')";
+    $stmt2 = $conn->prepare($query2);
+    $stmt2->bind_param("is", $rmtype_id, $room_number);
+    $stmt2->execute();
+
+    // Close statements and connection
+    $stmt1->close();
+    $stmt2->close();
+    $conn->close();
 
     // Redirect to rmtype_view.php after successful insertion
     echo "<script>alert('Successfully Added'); document.location.href = 'rmtype_view.php';</script>";
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,6 +81,10 @@ if(isset($_POST["submit"])){
             <div class="mb-4">
                 <label for="price" class="block text-gray-700">Price:</label>
                 <input type="number" id="price" name="price" step="0.01" min="0" class="w-full px-3 py-2 border rounded" required>
+            </div>
+            <div class="mb-4">
+                <label for="room_number" class="block text-gray-700">Room Number:</label>
+                <input type="text" id="room_number" name="room_number" class="w-full px-3 py-2 border rounded" required>
             </div>
             <div class="mb-4">
                 <label for="fileImg" class="block text-gray-700">Image:</label>

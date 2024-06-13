@@ -3,7 +3,7 @@
 require_once 'dbconnection.php';
 
 // Initialize variables
-$payment_id = $payment_image = $payment_date = '';
+$payment_online_id = $payment_image = $payment_date = '';
 $error = '';
 
 // Handle insert operation
@@ -22,12 +22,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
             // Upload file
             if (move_uploaded_file($_FILES["payment_image"]["tmp_name"], $targetFilePath)) {
                 // Insert payment data into database
-                $query = "INSERT INTO payment (payment_image, payment_date) VALUES ('$payment_image', '$payment_date')";
-                if (mysqli_query($conn, $query)) {
+                $query = "INSERT INTO payment_online (payment_image, payment_date) VALUES (?, ?)";
+                $stmt = $conn->prepare($query);
+                $stmt->bind_param("ss", $payment_image, $payment_date);
+                
+                if ($stmt->execute()) {
                     header("Location: payments.php");
                     exit();
                 } else {
-                    $error = "Error: " . $query . "<br>" . mysqli_error($conn);
+                    $error = "Error: " . $query . "<br>" . $conn->error;
                 }
             } else {
                 $error = "Error uploading file";
@@ -40,58 +43,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     }
 }
 
-// Handle delete operation for payment and corresponding booking
+// Handle delete operation for payment record
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $query = "SELECT payment_image FROM payment WHERE payment_id=$id";
-    $result = mysqli_query($conn, $query);
-    $row = mysqli_fetch_assoc($result);
-    $image = $row['payment_image'];
-    $targetFilePath = "payments/" . $image;
-    // Delete image file
-    unlink($targetFilePath);
-    // Delete payment record from database
-    $query = "DELETE FROM payment WHERE payment_id=$id";
-    if (mysqli_query($conn, $query)) {
-        header("Location: payments.php");
-        exit();
+    $query = "SELECT payment_image FROM payment_online WHERE payment_online_id=?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($payment_image);
+        $stmt->fetch();
+
+        // Delete image file
+        $targetFilePath = "payments/" . $payment_image;
+        if (file_exists($targetFilePath)) {
+            unlink($targetFilePath);
+        }
+
+        // Delete payment record from database
+        $query = "DELETE FROM payment_online WHERE payment_online_id=?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $id);
+        
+        if ($stmt->execute()) {
+            header("Location: payments.php");
+            exit();
+        } else {
+            $error = "Error deleting record: " . $conn->error;
+        }
     } else {
-        $error = "Error deleting record: " . mysqli_error($conn);
+        $error = "Record not found";
     }
 }
 
-// Handle delete operation for booking and corresponding payment
-if (isset($_GET['delete_booking'])) {
-    $booking_id = $_GET['delete_booking'];
-    // Find the payment_id related to this booking
-    $query = "SELECT payment_id FROM booking WHERE booking_id=$booking_id";
-    $result = mysqli_query($conn, $query);
-    $row = mysqli_fetch_assoc($result);
-    if ($row) {
-        $payment_id = $row['payment_id'];
-        // Delete the payment record
-        $query = "DELETE FROM payment WHERE payment_id=$payment_id";
-        mysqli_query($conn, $query);
-    }
-    // Delete the booking record
-    $query = "DELETE FROM booking WHERE booking_id=$booking_id";
-    if (mysqli_query($conn, $query)) {
-        header("Location: bookings.php");
-        exit();
-    } else {
-        $error = "Error deleting record: " . mysqli_error($conn);
-    }
-}
+// Retrieve payments data from the database
+$query = "SELECT payment_online_id, payment_image, payment_date FROM payment_online";
+$result = $conn->query($query);
 
-// Retrieve payments data from the database with booking_id
-$query = "SELECT p.payment_id, p.payment_image, p.payment_date, b.booking_id 
-          FROM payment p 
-          LEFT JOIN booking b ON p.payment_id = b.payment_id";
-$result = mysqli_query($conn, $query);
-$payments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+if ($result->num_rows > 0) {
+    $payments = $result->fetch_all(MYSQLI_ASSOC);
+} else {
+    $payments = [];
+}
 
 // Close database connection
-mysqli_close($conn);
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -123,14 +121,13 @@ mysqli_close($conn);
                             <th class="px-4 py-2">Payment ID</th>
                             <th class="px-4 py-2">Payment Image</th>
                             <th class="px-4 py-2">Payment Date</th>
-                            <th class="px-4 py-2">Booking ID</th>
                             <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($payments as $payment): ?>
                             <tr>
-                                <td class="border px-4 py-2"><?php echo $payment['payment_id']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $payment['payment_online_id']; ?></td>
                                 <td class="border px-4 py-2 flex justify-center">
                                     <?php
                                         // Get the path to the image file
@@ -146,9 +143,8 @@ mysqli_close($conn);
                                     ?>
                                 </td>
                                 <td class="border px-4 py-2"><?php echo $payment['payment_date']; ?></td>
-                                <td class="border px-4 py-2"><?php echo $payment['booking_id'] ? $payment['booking_id'] : 'No Booking'; ?></td>
                                 <td class="border px-4 py-2">
-                                    <a href="?delete=<?php echo $payment['payment_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
+                                    <a href="?delete=<?php echo $payment['payment_online_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

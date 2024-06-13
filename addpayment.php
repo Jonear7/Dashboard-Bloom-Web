@@ -22,9 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (move_uploaded_file($_FILES['payment_image']['tmp_name'], $filePath)) {
             // File upload successful, proceed to insert payment data into the database
             $payment_date = date("Y-m-d"); // Assuming you want to use the current date
-            $payment_type = "online"; // Default payment type
-            $insertPaymentStmt = $conn->prepare("INSERT INTO payment (payment_image, payment_date, payment_type) VALUES (?, ?, ?)");
-            $insertPaymentStmt->bind_param("sss", $fileName, $payment_date, $payment_type);
+            $payment_total = $_POST['payment_total']; // Assuming payment_total is sent via POST
+
+            $insertPaymentStmt = $conn->prepare("INSERT INTO payment_online (payment_image, payment_date, payment_total) VALUES (?, ?, ?)");
+            $insertPaymentStmt->bind_param("sss", $fileName, $payment_date, $payment_total);
 
             if ($insertPaymentStmt->execute()) {
                 // Payment data inserted successfully
@@ -49,6 +50,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Invalid request method
     echo json_encode(array("status" => "error", "message" => "Invalid request method"));
 }
-
-$conn->close();
 ?>

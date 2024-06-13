@@ -26,6 +26,7 @@
         <th class="px-4 py-2">Name</th>
         <th class="px-4 py-2">Description</th>
         <th class="px-4 py-2">Price</th>
+        <th class="px-4 py-2">Room Number</th> <!-- New column for Room Number -->
         <th class="px-4 py-2">Image</th>
         <th class="px-4 py-2">Actions</th>
       </tr>
@@ -56,7 +57,7 @@
         $stmt->close();
       }
 
-      $result = $conn->query("SELECT * FROM rmtype");
+      $result = $conn->query("SELECT rmtype.*, room.room_number FROM rmtype INNER JOIN room ON rmtype.rmtype_id = room.rmtype_id");
       ?>
       <?php while ($row = $result->fetch_assoc()) : ?>
       <tr>
@@ -64,6 +65,7 @@
         <td class="border px-4 py-2"><?php echo $row["type_name"]; ?></td>
         <td class="border px-4 py-2"><?php echo $row["description"]; ?></td>
         <td class="border px-4 py-2"><?php echo $row["price"]; ?></td>
+        <td class="border px-4 py-2"><?php echo $row["room_number"]; ?></td> <!-- Display room number -->
         <td class="border px-4 py-2">
           <?php foreach (json_decode($row["image"]) as $image) : ?>
             <a href="uploads/<?php echo $image; ?>" data-fancybox="gallery-<?php echo $row['rmtype_id']; ?>">
