@@ -112,7 +112,7 @@ $conn->close();
     <!-- Main content -->
     <div class="flex-1 p-8">
         <div class="container mx-auto py-8">
-            <h1 class="text-3xl font-bold mb-8 text-center">Payments</h1>
+            <h1 class="text-3xl font-bold mb-8 text-center">Online Payments</h1>
             <!-- Display payments table -->
             <div class="overflow-x-auto">
                 <table class="table-auto w-full">
