@@ -256,7 +256,7 @@ mysqli_close($conn);
             <div class="overflow-x-auto">
                 <table class="table-auto w-full text-left whitespace-no-wrap">
                     <thead>
-                        <tr class="bg-purple-700 text-white">
+                        <tr class="bg-white text-black">
                             <th class="py-2 px-4">Booking ID</th>
                             <th class="py-2 px-4">User</th>
                             <th class="py-2 px-4">Room Number</th>
@@ -270,14 +270,14 @@ mysqli_close($conn);
                     <tbody>
                         <?php foreach ($bookings as $booking): ?>
                             <tr>
-                                <td class="py-2 px-4"><?php echo $booking['booking_id']; ?></td>
-                                <td class="py-2 px-4"><?php echo $booking['username']; ?></td>
-                                <td class="py-2 px-4"><?php echo $booking['room_number']; ?></td>
-                                <td class="py-2 px-4"><?php echo $booking['checkin_date']; ?></td>
-                                <td class="py-2 px-4"><?php echo $booking['checkout_date']; ?></td>
-                                <td class="py-2 px-4"><?php echo $booking['total_price']; ?></td>
-                                <td class="py-2 px-4"><?php echo $booking['status']; ?></td>
-                                <td class="py-2 px-4">
+                                <td class="border px-4 py-2"><?php echo $booking['booking_id']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['username']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['room_number']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['checkin_date']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['checkout_date']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['total_price']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['status']; ?></td>
+                                <td class="border px-4 py-2">
                                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                                         <input type="hidden" name="booking_id" value="<?php echo $booking['booking_id']; ?>">
                                         <?php if ($booking['status'] == 'Booked'): ?>
