@@ -112,6 +112,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Call createEmployee function to insert into database
                 if (createEmployee($conn, $name, $surname, $age, $phone, $address, $job_position, $image_path)) {
                     echo "<p class='text-green-500'>Employee added successfully.</p>";
+                    header("Location: {$_SERVER['PHP_SELF']}");
+                    exit();
                 } else {
                     echo "<p class='text-red-500'>Failed to add employee.</p>";
                 }
@@ -140,6 +142,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Call updateEmployee function to update database
                 if (updateEmployee($conn, $id, $name, $surname, $age, $phone, $address, $job_position, $image_path)) {
                     echo "<p class='text-green-500'>Employee updated successfully.</p>";
+                    header("Location: {$_SERVER['PHP_SELF']}");
+                    exit();
                 } else {
                     echo "<p class='text-red-500'>Failed to update employee.</p>";
                 }
