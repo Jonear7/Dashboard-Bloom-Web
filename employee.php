@@ -330,6 +330,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
 
     <!-- JavaScript for Modals -->
     <script>
+        
         // Function to open the add employee modal
         function openAddModal() {
             document.getElementById('addEmployeeModal').style.display = 'block';
@@ -394,6 +395,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                 reader.readAsDataURL(input.files[0]);
             }
         }
+        
     </script>
 
 </body>
