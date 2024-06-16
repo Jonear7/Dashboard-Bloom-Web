@@ -232,6 +232,8 @@ mysqli_close($conn);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookings - Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         .fade-out {
             opacity: 0;
@@ -255,19 +257,19 @@ mysqli_close($conn);
 
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="get" class="mb-4">
                 <div class="flex items-center">
-                    <input type="text" name="search" value="<?php echo $search; ?>" placeholder="Search..." class="bg-gray-200 text-black font-bold py-2 px-4 rounded">
-                    <button type="submit" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-4">Search</button>
+                    <input type="text" name="search" value="<?php echo $search; ?>" placeholder="Search..." class="bg-gray-200 text-black font-bold py-2 px-4 rounded-full">
+                    <button type="submit" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full ml-4">Search</button>
                 </div>
             </form>
 
             <!-- Modal Trigger Button -->
-            <button id="openModal" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mb-4">Add Booking</button>
+            <button id="openModal" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full mb-4">Add Booking</button>
 
             <!-- Booking List Table -->
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto ">
                 <table class="table-auto w-full text-left whitespace-no-wrap">
                     <thead>
-                        <tr class="bg-white text-black">
+                        <tr class="bg-white text-black text-center">
                             <th class="py-2 px-4">Booking ID</th>
                             <th class="py-2 px-4">User</th>
                             <th class="py-2 px-4">Room Number</th>
@@ -280,7 +282,7 @@ mysqli_close($conn);
                     </thead>
                     <tbody>
                         <?php foreach ($bookings as $booking) : ?>
-                            <tr>
+                            <tr class="text-center">
                                 <td class="border px-4 py-2"><?php echo $booking['booking_id']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['username']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['room_number']; ?></td>
@@ -288,18 +290,20 @@ mysqli_close($conn);
                                 <td class="border px-4 py-2"><?php echo $booking['checkout_date']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['total_price']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['status']; ?></td>
-                                <td class="border px-4 py-2">
+                                <td class="border px-4 py-2 text-center">
                                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                                         <input type="hidden" name="booking_id" value="<?php echo $booking['booking_id']; ?>">
                                         <?php if ($booking['status'] == 'Booked') : ?>
-                                            <button type="submit" name="submit_checkin" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Check-in</button>
+                                            <button type="submit" name="submit_checkin" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">Check-in</button>
                                         <?php elseif ($booking['status'] == 'Checked-in') : ?>
-                                            <button type="submit" name="submit_checkout" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Check-out</button>
+                                            <button type="submit" name="submit_checkout" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Check-out</button>
                                         <?php endif; ?>
-                                        <button type="submit" name="submit_delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">Delete</button>
+                                        <button type="submit" name="submit_delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full ml-2">Delete</button>
 
                                         <!-- Add Print Button -->
-                                        <a href="generate_invoice.php?booking_id=<?php echo $booking['booking_id']; ?>" target="_blank" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Print Invoice</a>
+                                        <a href="#" onclick="window.open('generate_invoice.php?booking_id=<?php echo $booking['booking_id']; ?>', '_blank', 'width=800,height=600');" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 ml-2 rounded-full">
+            <i class="fas fa-print"></i> Print
+        </a>
 
                                     </form>
                                 </td>
@@ -316,8 +320,8 @@ mysqli_close($conn);
 
     <!-- Add Booking Modal -->
     <div id="addBookingModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded shadow-lg w-1/2 text-black">
-            <h2 class="text-2xl font-bold mb-4">Add Booking</h2>
+        <div class="bg-white p-8 rounded-full shadow-lg w-auto text-black">
+            <h2 class="text-2xl font-bold mb-4 text-center">Add Booking</h2>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <div class="mb-4">
                     <label for="user_id" class="block text-sm font-bold mb-2">User:</label>
@@ -348,7 +352,7 @@ mysqli_close($conn);
                 </div>
                 <button type="submit" name="submit_add" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Add Booking</button>
             </form>
-            <button id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4">Close</button>
+            <button id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 rounded-bl-full">Close</button>
         </div>
     </div>
 

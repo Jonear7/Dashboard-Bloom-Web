@@ -37,12 +37,13 @@ mysqli_close($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-out Records </title>
+    <title>Check-out Records</title>
     <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body class="bg-purple-800 text-white">
-<?php include 'bar.php'; ?>
+    <?php include 'bar.php'; ?>
     <!-- Main content -->
     <div class="flex-1 p-8">
         <div class="container mx-auto py-8">
@@ -51,8 +52,8 @@ mysqli_close($conn);
             <!-- Search form -->
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="get" class="mb-4">
                 <div class="flex items-center">
-                    <input type="text" name="search" value="<?php echo $search; ?>" placeholder="Search..." class="bg-gray-200 text-black font-bold py-2 px-4 rounded">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">Search</button>
+                    <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search..." class="bg-gray-200 text-black font-bold py-2 px-4 rounded-full">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full ml-2">Search</button>
                 </div>
             </form>
 
@@ -67,17 +68,23 @@ mysqli_close($conn);
                             <th class="px-4 py-2">Total Price</th>
                             <th class="px-4 py-2">Room Number</th>
                             <th class="px-4 py-2">Status</th>
+                            <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($checkin_out_records as $record): ?>
-                            <tr>
+                            <tr class="text-center">
                                 <td class="border px-4 py-2"><?php echo $record['booking_id']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $record['checkin_date']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $record['checkout_date']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $record['total_price']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $record['room_number']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $record['status']; ?></td>
+                                <td class="border px-4 py-2 text-center">
+                                    <button onclick="window.open('generate_pdf.php?booking_id=<?php echo $record['booking_id']; ?>', '_blank')" class="bg-blue-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
+                                        <i class="fas fa-print"></i> Print
+                                    </button>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

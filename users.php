@@ -177,13 +177,13 @@ $users = getAllUsers();
         <h1 class="text-3xl font-bold mb-8 text-center">Users</h1>
         <div class="flex justify-start mb-4"> <!-- Moved Add User button to left side -->
             <button id="addUserBtn"
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Add
                 User</button>
         </div>
         <!-- Modal for Add/Edit User -->
         <div id="userModal"
             class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
-            <div class="bg-white p-8 rounded shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+            <div class="bg-white p-8 rounded-full shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
                 <h2 id="modalTitle" class="text-2xl font-bold mb-6 text-center text-black">Add User</h2>
                 <form id="userForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
                     class="w-full max-w-lg">
@@ -194,32 +194,32 @@ $users = getAllUsers();
                             <label for="username"
                                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Username</label>
                             <input type="text" id="username" name="username"
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-full py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
                         </div>
                         <div class="w-full px-3 mb-6">
                             <label for="password"
                                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Password</label>
                             <input type="password" id="password" name="password"
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-full py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
                         </div>
                         <div class="w-full px-3 mb-6">
                             <label for="email"
                                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Email</label>
                             <input type="email" id="email" name="email"
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-full py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
                         </div>
                         <div class="w-full px-3 mb-6">
                             <label for="phone"
                                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Phone</label>
                             <input type="text" id="phone" name="phone"
-                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
+                                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded-full py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-purple-500">
                         </div>
                         <div class="w-full px-3 flex justify-end">
                             <button id="submitBtn" type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Add
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Add
                                 User</button>
                             <button id="cancelBtn" type="button"
-                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 ml-2 rounded focus:outline-none focus:shadow-outline">Cancel</button>
+                                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 ml-2 rounded-full focus:outline-none focus:shadow-outline">Cancel</button>
                         </div>
                     </div>
                 </form>
@@ -230,7 +230,7 @@ $users = getAllUsers();
         <div class="mb-8">
             <h2 class="text-xl font-bold mb-4">Users List</h2>
             <div class="overflow-x-auto">
-                <table class="table-auto w-full">
+                <table class="table-auto w-full text-center">
                     <thead>
                         <tr class="bg-gray-200 text-black">
                             <th class="px-4 py-2">ID</th>
@@ -249,7 +249,7 @@ $users = getAllUsers();
                             <td class="border px-4 py-2"><?php echo $user['phone']; ?></td>
                             <td class="border px-4 py-2">
                                 <button
-                                    class="editBtn bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                                    class="editBtn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
                                     data-userid="<?php echo $user['user_id']; ?>">Edit</button>
                                 <form class="inline-block"
                                     action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
@@ -258,7 +258,7 @@ $users = getAllUsers();
                                         value="<?php echo $user['user_id']; ?>">
                                     <input type="hidden" name="action" value="delete">
                                     <button type="submit"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button>
+                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Delete</button>
                                 </form>
                             </td>
                         </tr>

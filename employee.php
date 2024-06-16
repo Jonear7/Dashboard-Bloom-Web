@@ -185,7 +185,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
 </head>
 <body class="bg-purple-800">
     <?php include 'bar.php'; ?>
-    <div class="mx-auto">
+    <div class="mx-auto p-8">
         <div class="container mx-auto py-8">
             <h1 class="text-2xl font-bold mb-5 text-white text-center">Employee Management</h1>
 
@@ -200,9 +200,10 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
 
             <!-- Employee Table -->
             <div class="overflow-x-auto">
-                <table class="table-auto w-full">
+          
+                <table class="table-auto w-full ">
                     <thead>
-                    <tr class="bg-gray-200 text-black">
+                    <tr class="bg-gray-200 text-black text-center">
                             <th class="border px-4 py-2">ID</th>
                             <th class="border px-4 py-2">Name</th>
                             <th class="border px-4 py-2">Surname</th>
@@ -214,7 +215,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                             <th class="border px-4 py-2">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="text-white">
+                    <tbody class="text-white text-center">
                         <?php
                         $search = isset($_GET['search']) ? $_GET['search'] : null;
                         $employees = getAllEmployees($conn, $search);
@@ -229,8 +230,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                             echo "<td class='border px-4 py-2'>{$employee['job_position']}</td>";
                             echo "<td class='border px-4 py-2'><img src='{$employee['image_path']}' alt='Image' width='50'></td>";
                             echo "<td class='border px-4 py-2'>
-                                    <a href='#' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline' onclick='openEditModal(" . htmlspecialchars(json_encode($employee)) . ")'>Edit</a> 
-                                    <a href='?action=delete&id={$employee['id']}' class='bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline'>Delete</a>
+                                    <a href='#' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline' onclick='openEditModal(" . htmlspecialchars(json_encode($employee)) . ")'>Edit</a> 
+                                    <a href='?action=delete&id={$employee['id']}' class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline'>Delete</a>
                                   </td>";
                             echo "</tr>";
                         }
@@ -249,31 +250,31 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                 <input type="hidden" name="add_employee" value="1">
                 <div class="mb-4">
                     <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                    <input type="text" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="name" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="surname" class="block text-gray-700 text-sm font-bold mb-2">Surname</label>
-                    <input type="text" name="surname" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="surname" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age</label>
-                    <input type="number" name="age" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="number" name="age" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                    <input type="text" name="phone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="phone" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
-                    <input type="text" name="address" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="address" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="job_position" class="block text-gray-700 text-sm font-bold mb-2">Job Position</label>
-                    <input type="text" name="job_position" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="job_position" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image</label>
-                    <input type="file" name="image" id="add_image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewImage(event)" required>
+                    <input type="file" name="image" id="add_image" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewImage(event)" required>
                     <img id="add_image_preview" class="mt-2 hidden" width="150" />
                 </div>
                 <div class="flex items-center justify-between">
@@ -293,31 +294,31 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                 <input type="hidden" name="id" id="edit_id">
                 <div class="mb-4">
                     <label for="edit_name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                    <input type="text" name="name" id="edit_name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="name" id="edit_name" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="edit_surname" class="block text-gray-700 text-sm font-bold mb-2">Surname</label>
-                    <input type="text" name="surname" id="edit_surname" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="surname" id="edit_surname" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="edit_age" class="block text-gray-700 text-sm font-bold mb-2">Age</label>
-                    <input type="number" name="age" id="edit_age" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="number" name="age" id="edit_age" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="edit_phone" class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
-                    <input type="text" name="phone" id="edit_phone" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="phone" id="edit_phone" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="edit_address" class="block text-gray-700 text-sm font-bold mb-2">Address</label>
-                    <input type="text" name="address" id="edit_address" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="address" id="edit_address" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="edit_job_position" class="block text-gray-700 text-sm font-bold mb-2">Job Position</label>
-                    <input type="text" name="job_position" id="edit_job_position" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <input type="text" name="job_position" id="edit_job_position" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                 </div>
                 <div class="mb-4">
                     <label for="edit_image" class="block text-gray-700 text-sm font-bold mb-2">Image</label>
-                    <input type="file" name="image" id="edit_image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewEditImage(event)">
+                    <input type="file" name="image" id="edit_image" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onchange="previewEditImage(event)">
                     <img id="edit_image_preview" class="mt-2 hidden" width="150" />
                 </div>
                 <div class="flex items-center justify-between">
