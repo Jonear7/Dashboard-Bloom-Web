@@ -13,7 +13,7 @@ $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize and validate username and password
-    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+    $username = filter_input(INPUT_POST, 'username', );
     $password = $_POST['password'];
 
     if(empty($username) || empty($password)) {

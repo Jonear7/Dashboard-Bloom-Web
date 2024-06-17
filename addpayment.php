@@ -24,8 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $payment_date = date("Y-m-d"); // Assuming you want to use the current date
             $payment_total = $_POST['payment_total']; // Assuming payment_total is sent via POST
 
-            $insertPaymentStmt = $conn->prepare("INSERT INTO payment_online (payment_image, payment_date, payment_total) VALUES (?, ?, ?)");
-            $insertPaymentStmt->bind_param("sss", $fileName, $payment_date, $payment_total);
+            // Retrieve user_id from your session or wherever it's stored
+            // Example: Assuming user_id is stored in $_SESSION['user_id']
+            session_start();
+            $user_id = $_SESSION['user_id'];
+
+            // Prepare and bind parameters for insertion
+            $insertPaymentStmt = $conn->prepare("INSERT INTO payment_online (payment_image, payment_date, payment_total, user_id) VALUES (?, ?, ?, ?)");
+            $insertPaymentStmt->bind_param("sssi", $fileName, $payment_date, $payment_total, $user_id);
 
             if ($insertPaymentStmt->execute()) {
                 // Payment data inserted successfully

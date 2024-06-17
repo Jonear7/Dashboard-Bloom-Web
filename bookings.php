@@ -103,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $room_id = sanitize_input($conn, $_POST['room_id']);
         $checkin_date = sanitize_input($conn, $_POST['checkin_date']);
         $checkout_date = sanitize_input($conn, $_POST['checkout_date']);
-
+    
         // Check room availability
         $query_check_availability = "SELECT COUNT(*) AS count FROM booking 
                                      WHERE room_id = ? 
@@ -115,9 +115,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_check_availability = mysqli_stmt_get_result($stmt_check_availability);
         $availability = mysqli_fetch_assoc($result_check_availability);
         mysqli_stmt_close($stmt_check_availability);
-
+    
         session_start(); // Start the session if not already started
-
+    
         if ($availability['count'] > 0) {
             $_SESSION['error_message'] = "The selected room is not available for the specified dates.";
         } else {
@@ -132,54 +132,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $room_price_row = mysqli_fetch_assoc($result_room_price);
             $room_price = $room_price_row['price'];
             mysqli_stmt_close($stmt_room_price);
-
+    
             $checkin = new DateTime($checkin_date);
             $checkout = new DateTime($checkout_date);
             $interval = $checkin->diff($checkout);
             $total_days = $interval->days;
             $total_price = $total_days * $room_price;
-
+    
             // Clear any previous error message from session if present
             unset($_SESSION['error_message']);
-
-            // Redirect back to the booking form or wherever you want to display the message
-
+    
             // Insert booking details
             $query_insert_booking = "INSERT INTO booking (user_id, room_id, checkin_date, checkout_date, total_price, status) 
-VALUES (?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert_booking = mysqli_prepare($conn, $query_insert_booking);
-
-            $user_id = sanitize_input($conn, $_POST['user_id']);
-            $room_id = sanitize_input($conn, $_POST['room_id']);
-            $checkin_date = sanitize_input($conn, $_POST['checkin_date']);
-            $checkout_date = sanitize_input($conn, $_POST['checkout_date']);
             $status = 'Booked'; // Assign 'Booked' to a variable
-
+    
             mysqli_stmt_bind_param($stmt_insert_booking, 'iissds', $user_id, $room_id, $checkin_date, $checkout_date, $total_price, $status);
-
+    
             if (mysqli_stmt_execute($stmt_insert_booking)) {
-                $success_message = "Booking added successfully.";
-                header("Location: {$_SERVER['PHP_SELF']}");
-                exit();
+                // Get the last inserted booking ID
+                $booking_id = mysqli_insert_id($conn);
+    
                 // Insert into payment_walk_in table
                 $payment_date = date('Y-m-d'); // Assuming payment date is current date
-                $payment_total = $total_price; // Assuming payment total is the same as total price
-
-                $query_insert_payment = "INSERT INTO payment_walk_in (payment_date, payment_total) 
-    VALUES (?, ?)";
+                $query_insert_payment = "INSERT INTO payment_walk_in (user_id, payment_date, payment_total) VALUES (?, ?, ?)";
                 $stmt_insert_payment = mysqli_prepare($conn, $query_insert_payment);
-                mysqli_stmt_bind_param($stmt_insert_payment, 'sd', $payment_date, $payment_total);
-
+                mysqli_stmt_bind_param($stmt_insert_payment, 'isd', $user_id, $payment_date, $total_price);
+    
                 if (mysqli_stmt_execute($stmt_insert_payment)) {
-                    $success_message .= " Payment record added successfully.";
+                    $_SESSION['success_message'] = "Booking and payment added successfully.";
+                    header("Location: {$_SERVER['PHP_SELF']}");
+                    exit();
                 } else {
                     $error_message .= " Error adding payment record: " . mysqli_error($conn);
                 }
                 mysqli_stmt_close($stmt_insert_payment);
             } else {
-                $error_message = "Error adding booking: " . mysqli_error($conn);
+                $error_message .= " Error adding booking: " . mysqli_error($conn);
             }
-
             mysqli_stmt_close($stmt_insert_booking);
         }
     }

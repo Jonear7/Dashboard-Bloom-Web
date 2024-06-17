@@ -3,13 +3,14 @@
 require_once 'dbconnection.php';
 
 // Initialize variables
-$payment_online_id = $payment_image = $payment_date = '';
+$payment_online_id = $payment_image = $payment_date = $payment_total = '';
 $error = '';
 
 // Handle insert operation
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     // Validate and sanitize input data
     $payment_date = $_POST['payment_date'];
+    $payment_total = $_POST['payment_total'];
 
     // Check if image file was uploaded
     if ($_FILES['payment_image']['error'] == 0) {
@@ -22,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
             // Upload file
             if (move_uploaded_file($_FILES["payment_image"]["tmp_name"], $targetFilePath)) {
                 // Insert payment data into database
-                $query = "INSERT INTO payment_online (payment_image, payment_date) VALUES (?, ?)";
+                $query = "INSERT INTO payment_online (payment_image, payment_date, payment_total) VALUES (?, ?, ?)";
                 $stmt = $conn->prepare($query);
-                $stmt->bind_param("ss", $payment_image, $payment_date);
+                $stmt->bind_param("ssd", $payment_image, $payment_date, $payment_total);
                 
                 if ($stmt->execute()) {
                     header("Location: payments.php");
@@ -78,8 +79,10 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Retrieve payments data from the database
-$query = "SELECT payment_id, payment_image, payment_date FROM payment_online";
+// Retrieve payments data from the database including username
+$query = "SELECT p.payment_id, p.payment_image, p.payment_date, p.payment_total, u.username 
+          FROM payment_online p 
+          INNER JOIN users u ON p.user_id = u.user_id";
 $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
@@ -121,6 +124,8 @@ $conn->close();
                             <th class="px-4 py-2">Payment ID</th>
                             <th class="px-4 py-2">Payment Image</th>
                             <th class="px-4 py-2">Payment Date</th>
+                            <th class="px-4 py-2">Payment Total</th>
+                            <th class="px-4 py-2">Username</th>
                             <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
@@ -143,6 +148,8 @@ $conn->close();
                                     ?>
                                 </td>
                                 <td class="border px-4 py-2"><?php echo $payment['payment_date']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $payment['payment_total']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $payment['username']; ?></td>
                                 <td class="border px-4 py-2">
                                     <a href="?delete=<?php echo $payment['payment_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
                                 </td>

@@ -33,9 +33,14 @@ if (isset($_GET['delete'])) {
 }
 
 // Fetch walk-in payments
-$query = "SELECT * FROM payment_walk_in ORDER BY payment_date DESC";
+// Fetch walk-in payments with associated usernames
+$query = "SELECT payment_walk_in.*, users.username 
+          FROM payment_walk_in 
+          LEFT JOIN users ON payment_walk_in.user_id = users.user_id 
+          ORDER BY payment_date DESC";
 $result = mysqli_query($conn, $query);
 $payments = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
 
 // Close database connection
 mysqli_close($conn);
@@ -83,6 +88,7 @@ mysqli_close($conn);
                         <th class="border px-4 py-2">Payment ID</th>
                         <th class="border px-4 py-2">Payment Date</th>
                         <th class="border px-4 py-2">Payment Total</th>
+                        <th class="border px-4 py-2">Username</th>
                         <th class="border px-4 py-2">Actions</th>
                         <!-- Add more headers as needed -->
                     </tr>
@@ -93,6 +99,7 @@ mysqli_close($conn);
                             <td class="border px-4 py-2"><?php echo $payment['payment_id']; ?></td>
                             <td class="border px-4 py-2"><?php echo $payment['payment_date']; ?></td>
                             <td class="border px-4 py-2"><?php echo $payment['payment_total']; ?></td>
+                            <td class="border px-4 py-2"><?php echo $payment['username']; ?></td>
                             <td class="border px-4 py-2">
                                 <a href="?delete=<?php echo $payment['payment_id']; ?>" onclick="return confirm('Are you sure you want to delete this payment record?')" class="text-red-600 hover:text-red-800">Delete</a>
                             </td>
