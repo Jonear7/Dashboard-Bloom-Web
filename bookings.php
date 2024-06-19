@@ -49,10 +49,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["submit_checkout"])) {
         $booking_id = sanitize_input($conn, $_POST['booking_id']);
         $checkout_date = date('Y-m-d');
-
-        // Retrieve booking details
-        $query_select = "SELECT booking_id, checkin_date, total_price, room.room_number FROM booking 
+    
+        // Retrieve booking details including user_id
+        $query_select = "SELECT booking_id, checkin_date, total_price, room.room_number, users.user_id FROM booking 
                         JOIN room ON booking.room_id = room.room_id 
+                        JOIN users ON booking.user_id = users.user_id
                         WHERE booking.booking_id = ?";
         $stmt_select = mysqli_prepare($conn, $query_select);
         mysqli_stmt_bind_param($stmt_select, 'i', $booking_id);
@@ -60,31 +61,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_select = mysqli_stmt_get_result($stmt_select);
         $booking_details = mysqli_fetch_assoc($result_select);
         mysqli_stmt_close($stmt_select);
-
+    
         // Insert into checkin_out table
-        $query_insert = "INSERT INTO checkin_out (booking_id, checkin_date, checkout_date, total_price, room_number, status) 
-                         VALUES (?, ?, ?, ?, ?, ?)";
+        $query_insert = "INSERT INTO checkin_out (booking_id, checkin_date, checkout_date, total_price, room_number, status, user_id) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt_insert = mysqli_prepare($conn, $query_insert);
-
+    
         // Check if preparation of the statement was successful
         if ($stmt_insert === false) {
             $error_message .= "Error preparing insert statement: " . mysqli_error($conn);
         } else {
             // Bind parameters
-            mysqli_stmt_bind_param($stmt_insert, 'issdss', $booking_id, $booking_details['checkin_date'], $checkout_date, $booking_details['total_price'], $booking_details['room_number'], $status);
-
+            mysqli_stmt_bind_param($stmt_insert, 'issdssi', $booking_id, $booking_details['checkin_date'], $checkout_date, $booking_details['total_price'], $booking_details['room_number'], $status, $booking_details['user_id']);
+    
             // Set status
             $status = 'Checked-out';
-
+    
             // Execute statement
             if (mysqli_stmt_execute($stmt_insert)) {
-                $success_message .= " Booking checked-out successfully.";
+                $success_message .= "Booking checked-out successfully.";
             } else {
-                $error_message .= " Error checking out booking: " . mysqli_error($conn);
+                $error_message .= "Error checking out booking: " . mysqli_error($conn);
             }
         }
         mysqli_stmt_close($stmt_insert);
-
+    
         // Delete from booking table
         $query_delete = "DELETE FROM booking WHERE booking_id = ?";
         $stmt_delete = mysqli_prepare($conn, $query_delete);
@@ -96,6 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         mysqli_stmt_close($stmt_delete);
     }
+    
 
 
     if (isset($_POST['submit_add'])) {
@@ -103,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $room_id = sanitize_input($conn, $_POST['room_id']);
         $checkin_date = sanitize_input($conn, $_POST['checkin_date']);
         $checkout_date = sanitize_input($conn, $_POST['checkout_date']);
-    
+
         // Check room availability
         $query_check_availability = "SELECT COUNT(*) AS count FROM booking 
                                      WHERE room_id = ? 
@@ -115,9 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result_check_availability = mysqli_stmt_get_result($stmt_check_availability);
         $availability = mysqli_fetch_assoc($result_check_availability);
         mysqli_stmt_close($stmt_check_availability);
-    
+
         session_start(); // Start the session if not already started
-    
+
         if ($availability['count'] > 0) {
             $_SESSION['error_message'] = "The selected room is not available for the specified dates.";
         } else {
@@ -132,34 +134,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $room_price_row = mysqli_fetch_assoc($result_room_price);
             $room_price = $room_price_row['price'];
             mysqli_stmt_close($stmt_room_price);
-    
+
             $checkin = new DateTime($checkin_date);
             $checkout = new DateTime($checkout_date);
             $interval = $checkin->diff($checkout);
             $total_days = $interval->days;
             $total_price = $total_days * $room_price;
-    
+
             // Clear any previous error message from session if present
             unset($_SESSION['error_message']);
-    
+
+            // Insert booking details
+
             // Insert booking details
             $query_insert_booking = "INSERT INTO booking (user_id, room_id, checkin_date, checkout_date, total_price, status) 
-            VALUES (?, ?, ?, ?, ?, ?)";
+                                     VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert_booking = mysqli_prepare($conn, $query_insert_booking);
             $status = 'Booked'; // Assign 'Booked' to a variable
-    
+
             mysqli_stmt_bind_param($stmt_insert_booking, 'iissds', $user_id, $room_id, $checkin_date, $checkout_date, $total_price, $status);
-    
+
             if (mysqli_stmt_execute($stmt_insert_booking)) {
                 // Get the last inserted booking ID
                 $booking_id = mysqli_insert_id($conn);
-    
+
                 // Insert into payment_walk_in table
                 $payment_date = date('Y-m-d'); // Assuming payment date is current date
                 $query_insert_payment = "INSERT INTO payment_walk_in (user_id, payment_date, payment_total) VALUES (?, ?, ?)";
                 $stmt_insert_payment = mysqli_prepare($conn, $query_insert_payment);
                 mysqli_stmt_bind_param($stmt_insert_payment, 'isd', $user_id, $payment_date, $total_price);
-    
+
                 if (mysqli_stmt_execute($stmt_insert_payment)) {
                     $_SESSION['success_message'] = "Booking and payment added successfully.";
                     header("Location: {$_SERVER['PHP_SELF']}");
@@ -293,8 +297,8 @@ mysqli_close($conn);
 
                                         <!-- Add Print Button -->
                                         <a href="#" onclick="window.open('generate_invoice.php?booking_id=<?php echo $booking['booking_id']; ?>', '_blank', 'width=800,height=600');" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 ml-2 rounded-full">
-            <i class="fas fa-print"></i> Print
-        </a>
+                                            <i class="fas fa-print"></i> Print
+                                        </a>
 
                                     </form>
                                 </td>
@@ -309,43 +313,47 @@ mysqli_close($conn);
     </div>
     </div>
 
-    <!-- Add Booking Modal -->
-    <div id="addBookingModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center hidden">
-        <div class="bg-white p-8 rounded-full shadow-lg w-auto text-black">
-            <h2 class="text-2xl font-bold mb-4 text-center">Add Booking</h2>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                <div class="mb-4">
-                    <label for="user_id" class="block text-sm font-bold mb-2">User:</label>
-                    <select name="user_id" id="user_id" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required>
-                        <?php echo $user_options; ?>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label for="room_id" class="block text-sm font-bold mb-2">Room:</label>
-                    <select name="room_id" id="room_id" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
+  <!-- Add Booking Modal -->
+<div id="addBookingModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-8 rounded-full shadow-lg w-auto text-black">
+        <h2 class="text-2xl font-bold mb-4 text-center">Add Booking</h2>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <div class="mb-4">
+                <label for="user_id" class="block text-sm font-bold mb-2">User:</label>
+                <select name="user_id" id="user_id" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required>
+                    <?php echo $user_options; ?>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="room_id" class="block text-sm font-bold mb-2">Room:</label>
+                <select name="room_id" id="room_id" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
+                    <?php if (empty($rooms)) : ?>
+                        <option value="" disabled>No rooms available</option>
+                    <?php else : ?>
                         <?php foreach ($rooms as $room) : ?>
                             <option value="<?php echo $room['room_id']; ?>" data-price="<?php echo $room['price']; ?>"><?php echo $room['room_number'] . ' (' . $room['type_name'] . ')'; ?></option>
                         <?php endforeach; ?>
-                    </select>
-
-                </div>
-                <div class="mb-4">
-                    <label for="checkin_date" class="block text-sm font-bold mb-2">Check-in Date:</label>
-                    <input type="date" name="checkin_date" id="checkin_date" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
-                </div>
-                <div class="mb-4">
-                    <label for="checkout_date" class="block text-sm font-bold mb-2">Check-out Date:</label>
-                    <input type="date" name="checkout_date" id="checkout_date" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
-                </div>
-                <div class="mb-4">
-                    <label for="total_price" class="block text-sm font-bold mb-2">Total Price:</label>
-                    <input type="text" name="total_price" id="total_price" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" readonly>
-                </div>
-                <button type="submit" name="submit_add" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Add Booking</button>
-            </form>
-            <button id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 rounded-bl-full">Close</button>
-        </div>
+                    <?php endif; ?>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="checkin_date" class="block text-sm font-bold mb-2">Check-in Date:</label>
+                <input type="date" name="checkin_date" id="checkin_date" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
+            </div>
+            <div class="mb-4">
+                <label for="checkout_date" class="block text-sm font-bold mb-2">Check-out Date:</label>
+                <input type="date" name="checkout_date" id="checkout_date" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
+            </div>
+            <div class="mb-4">
+                <label for="total_price" class="block text-sm font-bold mb-2">Total Price:</label>
+                <input type="text" name="total_price" id="total_price" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" readonly>
+            </div>
+            <button type="submit" name="submit_add" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Add Booking</button>
+        </form>
+        <button id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 rounded-bl-full">Close</button>
     </div>
+</div>
+
 
     <script>
         function calculateTotalPrice() {
