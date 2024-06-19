@@ -176,6 +176,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
 
 // HTML output starts here
 ?>
+<!-- HTML output starts here -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,6 +197,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Search</button>
                 </form>
                 <button onclick="openAddModal()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">Add Employee</button>
+                <form action="pdf_employee.php" method="POST" class="ml-2">
+                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">Print PDF</button>
+                </form>
             </div>
 
             <!-- Employee Table -->
@@ -228,7 +232,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                             echo "<td class='border px-4 py-2'>{$employee['phone']}</td>";
                             echo "<td class='border px-4 py-2'>{$employee['address']}</td>";
                             echo "<td class='border px-4 py-2'>{$employee['job_position']}</td>";
-                            echo "<td class='border px-4 py-2'><img src='{$employee['image_path']}' alt='Image' width='50'></td>";
+                            echo "<td class='border px-4 py-2'><img src='{$employee['image_path']}' alt='Image' width='70'></td>";
                             echo "<td class='border px-4 py-2'>
                                     <a href='#' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline' onclick='openEditModal(" . htmlspecialchars(json_encode($employee)) . ")'>Edit</a> 
                                     <a href='?action=delete&id={$employee['id']}' class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline'>Delete</a>
@@ -241,6 +245,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
             </div>
         </div>
     </div>
+
+    <!-- Modals and JavaScript for Modals omitted for brevity -->
+
+</body>
+</html>
+
 
     <!-- Add Employee Modal -->
     <div id="addEmployeeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">

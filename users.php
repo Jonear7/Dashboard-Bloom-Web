@@ -179,6 +179,9 @@ $users = getAllUsers();
             <button id="addUserBtn"
                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Add
                 User</button>
+                <a href="pdf_user.php" target="_blank"
+        class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Print
+        Users</a>
         </div>
         <!-- Modal for Add/Edit User -->
         <div id="userModal"

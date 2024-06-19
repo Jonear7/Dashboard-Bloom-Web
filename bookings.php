@@ -296,7 +296,7 @@ mysqli_close($conn);
                                         <button type="submit" name="submit_delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full ml-2">Delete</button>
 
                                         <!-- Add Print Button -->
-                                        <a href="#" onclick="window.open('generate_invoice.php?booking_id=<?php echo $booking['booking_id']; ?>', '_blank', 'width=800,height=600');" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 ml-2 rounded-full">
+                                        <a href="#" onclick="window.open('pdf_invoice.php?booking_id=<?php echo $booking['booking_id']; ?>', '_blank', 'width=800,height=600');" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 ml-2 rounded-full">
                                             <i class="fas fa-print"></i> Print
                                         </a>
 
