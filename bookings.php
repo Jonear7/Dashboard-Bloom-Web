@@ -313,7 +313,7 @@ mysqli_close($conn);
     </div>
     </div>
 
-  <!-- Add Booking Modal -->
+<!-- Add Booking Modal -->
 <div id="addBookingModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white p-8 rounded-full shadow-lg w-auto text-black">
         <h2 class="text-2xl font-bold mb-4 text-center">Add Booking</h2>
@@ -321,12 +321,14 @@ mysqli_close($conn);
             <div class="mb-4">
                 <label for="user_id" class="block text-sm font-bold mb-2">User:</label>
                 <select name="user_id" id="user_id" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required>
+                    <option value="" disabled selected>Select a user</option>
                     <?php echo $user_options; ?>
                 </select>
             </div>
             <div class="mb-4">
                 <label for="room_id" class="block text-sm font-bold mb-2">Room:</label>
                 <select name="room_id" id="room_id" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" required onchange="calculateTotalPrice()">
+                    <option value="" disabled selected>Select a room</option>
                     <?php if (empty($rooms)) : ?>
                         <option value="" disabled>No rooms available</option>
                     <?php else : ?>
@@ -353,6 +355,7 @@ mysqli_close($conn);
         <button id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 rounded-bl-full">Close</button>
     </div>
 </div>
+
 
 
     <script>
