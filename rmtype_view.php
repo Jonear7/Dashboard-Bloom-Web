@@ -1,3 +1,71 @@
+<?php
+require 'dbconnection.php';
+require 'tcpdf/tcpdf.php';
+
+// Fetch room type data
+$conn = new mysqli("localhost", "root", "", "bloom");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
+    // Handle PDF generation
+    $result = $conn->query("SELECT rmtype.*, room.room_number FROM rmtype INNER JOIN room ON rmtype.rmtype_id = room.rmtype_id");
+
+    // Create a new TCPDF object
+    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+    // Set document information
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Your Name');
+    $pdf->SetTitle('Room Type Information');
+    $pdf->SetSubject('Room Type List');
+    $pdf->SetKeywords('Rooms, Room Types');
+
+    // Remove default header/footer
+    $pdf->setPrintHeader(false);
+    $pdf->setPrintFooter(false);
+
+    // Add a page
+    $pdf->AddPage();
+
+    // Content
+    $html = '<h1 style="text-align: center; margin-bottom: 10px;">Room Type Information</h1>';
+    $html .= '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f0f0f0; text-align: center;">
+                        <th style="width: 20%; padding: 4px;">ID</th>
+                        <th style="width: 20%; padding: 4px;">Name</th>
+                        <th style="width: 20%; padding: 4px;">Description</th>
+                        <th style="width: 20%; padding: 4px;">Price</th>
+                        <th style="width: 20%; padding: 4px;">Room Number</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+    // Add data rows
+    $i = 1;
+    while ($row = $result->fetch_assoc()) {
+        $html .= '<tr style="text-align: center;">
+                    <td style="padding: 4px;">'.$i++.'</td>
+                    <td style="padding: 4px;">'.$row['type_name'].'</td>
+                    <td style="padding: 4px;">'.$row['description'].'</td>
+                    <td style="padding: 4px;">'.$row['price'].'</td>
+                    <td style="padding: 4px;">'.$row['room_number'].'</td>
+                 </tr>';
+    }
+
+    $html .= '</tbody></table>';
+
+    // Output the HTML content
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    // Close and output PDF document
+    $pdf->Output('room_type_information.pdf', 'I'); // I for inline display, D for download
+    exit;
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +87,9 @@
 <h1 class="text-3xl text-center py-8">Room Type Information</h1>
 
 <div class="overflow-x-auto mx-4">
+  <form method="post" action="">
+    <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Print PDF</button>
+  </form>
   <table class="w-full table-auto">
     <thead>
       <tr class="bg-gray-200 text-black">
@@ -26,7 +97,7 @@
         <th class="px-4 py-2">Name</th>
         <th class="px-4 py-2">Description</th>
         <th class="px-4 py-2">Price</th>
-        <th class="px-4 py-2">Room Number</th> <!-- New column for Room Number -->
+        <th class="px-4 py-2">Room Number</th>
         <th class="px-4 py-2">Image</th>
         <th class="px-4 py-2">Actions</th>
       </tr>
@@ -34,13 +105,9 @@
     <tbody>
       <?php
       $i = 1;
-      $conn = new mysqli("localhost", "root", "", "bloom");
-      if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-      }
+      $result = $conn->query("SELECT rmtype.*, room.room_number FROM rmtype INNER JOIN room ON rmtype.rmtype_id = room.rmtype_id");
 
-      // Handle the update request
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['generate_pdf'])) {
         $rmtypeId = $_POST['rmtypeId'];
         $price = $_POST['price'];
 
@@ -57,15 +124,13 @@
         $stmt->close();
       }
 
-      $result = $conn->query("SELECT rmtype.*, room.room_number FROM rmtype INNER JOIN room ON rmtype.rmtype_id = room.rmtype_id");
-      ?>
-      <?php while ($row = $result->fetch_assoc()) : ?>
+      while ($row = $result->fetch_assoc()) : ?>
       <tr>
         <td class="border px-4 py-2"><?php echo $i++; ?></td>
         <td class="border px-4 py-2"><?php echo $row["type_name"]; ?></td>
         <td class="border px-4 py-2"><?php echo $row["description"]; ?></td>
         <td class="border px-4 py-2"><?php echo $row["price"]; ?></td>
-        <td class="border px-4 py-2"><?php echo $row["room_number"]; ?></td> <!-- Display room number -->
+        <td class="border px-4 py-2"><?php echo $row["room_number"]; ?></td>
         <td class="border px-4 py-2">
           <?php foreach (json_decode($row["image"]) as $image) : ?>
             <a href="uploads/<?php echo $image; ?>" data-fancybox="gallery-<?php echo $row['rmtype_id']; ?>">

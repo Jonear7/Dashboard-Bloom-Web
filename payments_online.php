@@ -2,6 +2,9 @@
 // Include database connection file
 require_once 'dbconnection.php';
 
+// Include TCPDF library
+require_once 'tcpdf/tcpdf.php';
+
 // Initialize variables
 $payment_online_id = $payment_image = $payment_date = $payment_total = '';
 $error = '';
@@ -91,6 +94,58 @@ if ($result->num_rows > 0) {
     $payments = [];
 }
 
+// Check if PDF generation is requested
+if (isset($_POST['generate_pdf'])) {
+    // Create a new TCPDF object
+    $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+    // Set document information
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Your Name');
+    $pdf->SetTitle('Online Payments');
+    $pdf->SetSubject('Online Payments List');
+    $pdf->SetKeywords('Payments, Online');
+
+    // Remove default header/footer
+    $pdf->setPrintHeader(false);
+    $pdf->setPrintFooter(false);
+
+    // Add a page
+    $pdf->AddPage();
+
+    // Content
+    $html = '<h1 style="text-align: center; margin-bottom: 10px;">Online Payments</h1>';
+    $html .= '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f0f0f0; text-align: center;">
+                        <th style="width: 25%; padding: 4px;">Payment ID</th>
+                        <th style="width: 25%; padding: 4px;">Payment Date</th>
+                        <th style="width: 25%; padding: 4px;">Payment Total</th>
+                        <th style="width: 25%; padding: 4px;">Username</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+    // Add data rows
+    foreach ($payments as $payment) {
+        $html .= '<tr style="text-align: center;">
+                    <td style="padding: 4px;">'.$payment['payment_id'].'</td>
+                    <td style="padding: 4px;">'.$payment['payment_date'].'</td>
+                    <td style="padding: 4px;">'.$payment['payment_total'].'</td>
+                    <td style="padding: 4px;">'.$payment['username'].'</td>
+                 </tr>';
+    }
+
+    $html .= '</tbody></table>';
+
+    // Output the HTML content
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+    // Close and output PDF document
+    $pdf->Output('online_payments.pdf', 'I'); // I for inline display, D for download
+    exit;
+}
+
 // Close database connection
 $conn->close();
 ?>
@@ -116,6 +171,12 @@ $conn->close();
     <div class="flex-1 p-8">
         <div class="container mx-auto py-8">
             <h1 class="text-3xl font-bold mb-8 text-center">Online Payments</h1>
+            
+            <!-- Form to generate PDF -->
+            <form method="post" action="">
+                <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Print PDF</button>
+            </form>
+
             <!-- Display payments table -->
             <div class="overflow-x-auto">
                 <table class="table-auto w-full">
@@ -222,4 +283,3 @@ $conn->close();
     </script>
 </body>
 </html>
- 
