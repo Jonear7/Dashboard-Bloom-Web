@@ -88,7 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
 
 <div class="overflow-x-auto mx-4">
   <form method="post" action="">
-    <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Print PDF</button>
+    <div class="flex justify-between items-center mb-4">
+      <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Print PDF</button>
+      <a href="upload.php" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Room</a>
+    </div>
   </form>
   <table class="w-full table-auto">
     <thead>
@@ -148,8 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
     </tbody>
   </table>
 </div>
-<br>
-<a href="upload.php" class="block text-center py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">Upload Image</a>
 
 <!-- Update Modal -->
 <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">

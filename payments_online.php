@@ -83,9 +83,11 @@ if (isset($_GET['delete'])) {
 }
 
 // Retrieve payments data from the database including username
+$search = isset($_GET['search']) ? $_GET['search'] : '';
 $query = "SELECT p.payment_id, p.payment_image, p.payment_date, p.payment_total, u.username 
           FROM payment_online p 
-          INNER JOIN users u ON p.user_id = u.user_id";
+          INNER JOIN users u ON p.user_id = u.user_id
+          WHERE p.payment_id LIKE '%$search%' OR u.username LIKE '%$search%'";
 $result = $conn->query($query);
 
 if ($result->num_rows > 0) {
@@ -177,48 +179,55 @@ $conn->close();
                 <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Print PDF</button>
             </form>
 
-            <!-- Display payments table -->
-            <div class="overflow-x-auto">
-                <table class="table-auto w-full">
-                    <thead>
-                        <tr class="bg-gray-200 text-black">
-                            <th class="px-4 py-2">Payment ID</th>
-                            <th class="px-4 py-2">Payment Image</th>
-                            <th class="px-4 py-2">Payment Date</th>
-                            <th class="px-4 py-2">Payment Total</th>
-                            <th class="px-4 py-2">Username</th>
-                            <th class="px-4 py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($payments as $payment): ?>
-                            <tr>
-                                <td class="border px-4 py-2"><?php echo $payment['payment_id']; ?></td>
-                                <td class="border px-4 py-2 flex justify-center">
-                                    <?php
-                                        // Get the path to the image file
-                                        $imagePath = 'payments/' . $payment['payment_image']; // Assuming the images are stored in the 'payments' directory
-                                        // Check if the file exists
-                                        if (file_exists($imagePath)) {
-                                            // Display the image with data-fancybox attribute
-                                            echo '<a href="' . $imagePath . '" data-fancybox="images"><img src="' . $imagePath . '" class="w-24 h-24 object-cover" alt="Payment Image"></a>';
-                                        } else {
-                                            // Display a placeholder if the image file doesn't exist
-                                            echo 'Image not available';
-                                        }
-                                    ?>
-                                </td>
-                                <td class="border px-4 py-2"><?php echo $payment['payment_date']; ?></td>
-                                <td class="border px-4 py-2"><?php echo $payment['payment_total']; ?></td>
-                                <td class="border px-4 py-2"><?php echo $payment['username']; ?></td>
-                                <td class="border px-4 py-2">
-                                    <a href="?delete=<?php echo $payment['payment_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+            <!-- Search form -->
+            <form method="get" action="" class="mb-4">
+                <input type="text" name="search" placeholder="Search by Payment ID or Username" class="p-2 rounded-md border border-gray-300">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded inline-block">Search</button>
+            </form>
+
+          <!-- Display payments table -->
+<div class="overflow-x-auto">
+    <table class="table-auto w-full">
+        <thead>
+            <tr class="bg-gray-200 text-black">
+                <th class="px-4 py-2">Payment ID</th>
+                <th class="px-4 py-2">Payment Date</th>
+                <th class="px-4 py-2">Payment Total</th>
+                <th class="px-4 py-2">Username</th>
+                <th class="px-4 py-2">Image</th>
+                <th class="px-4 py-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($payments as $payment): ?>
+                <tr>
+                    <td class="border px-4 py-2"><?php echo $payment['payment_id']; ?></td>
+                    <td class="border px-4 py-2"><?php echo $payment['payment_date']; ?></td>
+                    <td class="border px-4 py-2"><?php echo $payment['payment_total']; ?></td>
+                    <td class="border px-4 py-2"><?php echo $payment['username']; ?></td>
+                    <td class="border px-4 py-2">
+                        <?php if (!empty($payment['payment_image'])): ?>
+                            <a href="payments/<?php echo $payment['payment_image']; ?>" data-fancybox="gallery">
+                                <img src="payments/<?php echo $payment['payment_image']; ?>" class="h-16 w-16 object-cover" alt="Payment Image">
+                            </a>
+                        <?php else: ?>
+                            No Image
+                        <?php endif; ?>
+                    </td>
+                    <td class="border px-4 py-2">
+                        <a href="?delete=<?php echo $payment['payment_id']; ?>" class="text-red-600 hover:text-red-800">Delete</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <?php if (empty($payments)): ?>
+                <tr>
+                    <td colspan="6" class="text-center py-4">No payments found.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
 
             <!-- Error handling modal -->
             <div id="errorModal" class="fixed z-10 inset-0 overflow-y-auto hidden">
