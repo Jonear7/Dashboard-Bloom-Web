@@ -114,7 +114,11 @@ if (isset($_POST['generate_pdf'])) {
 
     // Add a page
     $pdf->AddPage();
-
+    // Add datetime at the top left
+    $date = date('Y-m-d H:i'); // Current date and time
+    $pdf->SetFont('helvetica', '', 10);
+    $pdf->SetXY(10, 5); // Set the position to top left
+    $pdf->Cell(0, 10,  $date, 0, 1, 'L');
     // Content
     $html = '<h1 style="text-align: center; margin-bottom: 10px;">Online Payments</h1>';
     $html .= '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse;">
@@ -176,7 +180,7 @@ $conn->close();
             
             <!-- Form to generate PDF -->
             <form method="post" action="">
-                <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Print PDF</button>
+                <button type="submit" name="generate_pdf" class="bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">Print PDF</button>
             </form>
 
             <!-- Search form -->

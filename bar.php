@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     <!-- End Dropdown for Payments -->
-                    <a href="rmtype_view.php" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Rooms</a>
+                    <a href="room_view.php" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Rooms</a>
                     <!-- Logout Link with icon -->
                     <a href="logout.php" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                         <i class="fas fa-sign-out-alt mr-1"></i>Logout

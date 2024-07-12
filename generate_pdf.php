@@ -48,6 +48,11 @@ if (isset($_GET['booking_id'])) {
 
     // Add a page
     $pdf->AddPage();
+    // Add datetime at the top left
+    $date = date('Y-m-d H:i'); // Current date and time
+    $pdf->SetFont('helvetica', '', 10);
+    $pdf->SetXY(10, 5); // Set the position to top left
+    $pdf->Cell(0, 10,  $date, 0, 1, 'L');
 
     // Set font
     $pdf->SetFont('helvetica', '', 12);

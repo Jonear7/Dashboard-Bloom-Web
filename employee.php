@@ -198,7 +198,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
                 </form>
                 <button onclick="openAddModal()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">Add Employee</button>
                 <form action="pdf_employee.php" method="POST" class="ml-2">
-                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">Print PDF</button>
+                    <button type="submit" class="bg-blue-400 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">Print PDF</button>
                 </form>
             </div>
 

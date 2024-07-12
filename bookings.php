@@ -315,7 +315,7 @@ mysqli_close($conn);
 
 <!-- Add Booking Modal -->
 <div id="addBookingModal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center hidden">
-    <div class="bg-white p-8 rounded-full shadow-lg w-auto text-black">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-auto text-black">
         <h2 class="text-2xl font-bold mb-4 text-center">Add Booking</h2>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="mb-4">
@@ -350,7 +350,7 @@ mysqli_close($conn);
                 <label for="total_price" class="block text-sm font-bold mb-2">Total Price:</label>
                 <input type="text" name="total_price" id="total_price" class="bg-gray-200 text-black font-bold py-2 px-4 rounded w-full" readonly>
             </div>
-            <button type="submit" name="submit_add" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Add Booking</button>
+            <button type="submit" name="submit_add" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-bl-full">Add Booking</button>
         </form>
         <button id="closeModal" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 rounded-bl-full">Close</button>
     </div>

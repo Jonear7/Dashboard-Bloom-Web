@@ -28,16 +28,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
 
     // Add a page
     $pdf->AddPage();
-
+      // Add datetime at the top left
+      $date = date('Y-m-d H:i'); // Current date and time
+      $pdf->SetFont('helvetica', '', 10);
+      $pdf->SetXY(10, 5); // Set the position to top left
+      $pdf->Cell(0, 10,  $date, 0, 1, 'L');
     // Content
     $html = '<h1 style="text-align: center; margin-bottom: 10px;">Room Type Information</h1>';
     $html .= '<table border="1" cellpadding="4" cellspacing="0" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background-color: #f0f0f0; text-align: center;">
-                        <th style="width: 20%; padding: 4px;">ID</th>
-                        <th style="width: 20%; padding: 4px;">Name</th>
-                        <th style="width: 20%; padding: 4px;">Description</th>
-                        <th style="width: 20%; padding: 4px;">Price</th>
+                        <th style="width: 6%; padding: 4px;">ID</th>
+                        <th style="width: 10%; padding: 4px;">Name</th>
+                        <th style="width: 55%; padding: 4px;">Description</th>
+                        <th style="width: 10%; padding: 4px;">Price</th>
                         <th style="width: 20%; padding: 4px;">Room Number</th>
                     </tr>
                 </thead>
@@ -46,12 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
     // Add data rows
     $i = 1;
     while ($row = $result->fetch_assoc()) {
+        $price = rtrim(rtrim($row['price'], '0'), '.'); // Remove trailing zeros and dot if necessary
         $html .= '<tr style="text-align: center;">
-                    <td style="padding: 4px;">'.$i++.'</td>
-                    <td style="padding: 4px;">'.$row['type_name'].'</td>
-                    <td style="padding: 4px;">'.$row['description'].'</td>
-                    <td style="padding: 4px;">'.$row['price'].'</td>
-                    <td style="padding: 4px;">'.$row['room_number'].'</td>
+                    <td style="width: 6%; padding: 4px;">'.$i++.'</td>
+                    <td style="width: 10%; padding: 4px;">'.$row['type_name'].'</td>
+                    <td style="width: 55%; padding: 4px;">'.$row['description'].'</td>
+                    <td style="width: 10%; padding: 4px;">'.$price.'</td>
+                    <td style="width: 20%; padding: 4px;">'.$row['room_number'].'</td>
                  </tr>';
     }
 
@@ -64,8 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
     $pdf->Output('room_type_information.pdf', 'I'); // I for inline display, D for download
     exit;
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
 <div class="overflow-x-auto mx-4">
   <form method="post" action="">
     <div class="flex justify-between items-center mb-4">
-      <button type="submit" name="generate_pdf" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Print PDF</button>
+      <button type="submit" name="generate_pdf" class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">Print PDF</button>
       <a href="upload.php" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Room</a>
     </div>
   </form>
@@ -127,12 +132,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
         $stmt->close();
       }
 
-      while ($row = $result->fetch_assoc()) : ?>
+      while ($row = $result->fetch_assoc()) : 
+        $price = rtrim(rtrim($row['price'], '0'), '.'); // Remove trailing zeros and dot if necessary
+      ?>
       <tr>
         <td class="border px-4 py-2"><?php echo $i++; ?></td>
         <td class="border px-4 py-2"><?php echo $row["type_name"]; ?></td>
         <td class="border px-4 py-2"><?php echo $row["description"]; ?></td>
-        <td class="border px-4 py-2"><?php echo $row["price"]; ?></td>
+        <td class="border px-4 py-2"><?php echo $price; ?>$</td>
         <td class="border px-4 py-2"><?php echo $row["room_number"]; ?></td>
         <td class="border px-4 py-2">
           <?php foreach (json_decode($row["image"]) as $image) : ?>
@@ -157,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['generate_pdf'])) {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="updateModalLabel">Update Room Type Information</h5>
+        <h5 class="modal-title text-black" id="updateModalLabel">Update Room Type Information</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

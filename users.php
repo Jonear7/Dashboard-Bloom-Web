@@ -180,13 +180,13 @@ $users = getAllUsers();
                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Add
                 User</button>
                 <a href="pdf_user.php" target="_blank"
-        class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Print
+        class="bg-blue-400 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Print
         Users</a>
         </div>
         <!-- Modal for Add/Edit User -->
         <div id="userModal"
             class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 hidden flex items-center justify-center">
-            <div class="bg-white p-8 rounded-full shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+            <div class="bg-white p-8 rounded-xl shadow-lg w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
                 <h2 id="modalTitle" class="text-2xl font-bold mb-6 text-center text-black">Add User</h2>
                 <form id="userForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"
                     class="w-full max-w-lg">
@@ -219,8 +219,8 @@ $users = getAllUsers();
                         </div>
                         <div class="w-full px-3 flex justify-end">
                             <button id="submitBtn" type="submit"
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">Add
-                                User</button>
+                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+                                  Save</button>
                             <button id="cancelBtn" type="button"
                                 class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 ml-2 rounded-full focus:outline-none focus:shadow-outline">Cancel</button>
                         </div>
