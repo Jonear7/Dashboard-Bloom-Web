@@ -45,3 +45,4 @@ if (isset($_GET['user_id'])) {
 
 $conn->close();
 
+?>
