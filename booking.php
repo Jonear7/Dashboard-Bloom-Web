@@ -19,10 +19,11 @@ if ($conn->connect_error) {
 if (isset($_GET['user_id'])) {
   $user_id = $_GET['user_id'];
 
-  // Select booking data with room name for the specified user
-  $sql = "SELECT booking.*
+  // Select booking data with room name and room type for the specified user
+  $sql = "SELECT booking.*, room.room_number, rmtype.type_name
           FROM booking 
           INNER JOIN room ON booking.room_id = room.room_id
+          INNER JOIN rmtype ON room.rmtype_id = rmtype.rmtype_id
           WHERE booking.user_id = $user_id";
 
   $result = $conn->query($sql);
