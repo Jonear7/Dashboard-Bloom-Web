@@ -280,7 +280,7 @@ mysqli_close($conn);
                             <tr class="text-center">
                                 <td class="border px-4 py-2"><?php echo $booking['booking_id']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['username']; ?></td>
-                                <td class="border px-4 py-2"><?php echo $booking['room_number']; ?></td>
+                                <td class="border px-4 py-2"><?php echo $booking['room_number']. ' (' . $booking['type_name'] . ')'; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['checkin_date']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['checkout_date']; ?></td>
                                 <td class="border px-4 py-2"><?php echo $booking['total_price']; ?></td>
