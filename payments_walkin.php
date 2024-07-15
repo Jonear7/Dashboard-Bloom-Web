@@ -37,7 +37,7 @@ function getAllPayments() {
     $query = "SELECT payment_walk_in.*, users.username 
               FROM payment_walk_in 
               LEFT JOIN users ON payment_walk_in.user_id = users.user_id 
-              ORDER BY payment_date DESC";
+              ORDER BY payment_date ASC";
     $result = mysqli_query($conn, $query);
     $payments = mysqli_fetch_all($result, MYSQLI_ASSOC);
     mysqli_free_result($result);

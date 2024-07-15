@@ -67,12 +67,12 @@ if (isset($_GET['delete'])) {
         }
 
         // Delete payment record from database
-        $query = "DELETE FROM payment_online WHERE payment_online_id=?";
+        $query = "DELETE FROM payment_online WHERE payment_id=?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $id);
         
         if ($stmt->execute()) {
-            header("Location: payments.php");
+            header("Location: payments_online.php");
             exit();
         } else {
             $error = "Error deleting record: " . $conn->error;
